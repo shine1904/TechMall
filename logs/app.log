@@ -1,0 +1,43 @@
+[2025-09-28 11:40:31] [INFO] Starting auto cancel PayPal pending orders
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #112 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #118 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #124 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #125 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #127 - User: 1
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #148 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #150 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #151 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #152 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #153 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #154 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #155 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #156 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #157 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #158 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #159 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #170 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #171 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #172 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #176 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #177 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #178 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #179 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #181 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #185 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #186 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #189 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #194 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #207 - User: 3
+[2025-09-28 11:40:31] [INFO] Cancelled PayPal order #209 - User: 11
+[2025-09-28 11:40:31] [INFO] Auto cancel completed. Cancelled 30 PayPal pending orders
+[2025-09-28 11:51:19] [INFO] Starting auto cancel PayPal pending orders
+[2025-09-28 11:51:19] [INFO] Cancelled PayPal order #210 - User: 11
+[2025-09-28 11:51:19] [INFO] Auto cancel completed. Cancelled 1 PayPal pending orders
+[2025-09-28 13:57:02] [INFO] Starting auto cancel PayPal pending orders
+[2025-09-28 13:57:02] [INFO] Cancelled PayPal order #211 - User: 11
+[2025-09-28 13:57:02] [INFO] Cancelled PayPal order #212 - User: 1
+[2025-09-28 13:57:02] [INFO] Cancelled PayPal order #213 - User: 11
+[2025-09-28 13:57:02] [INFO] Cancelled PayPal order #216 - User: 11
+[2025-09-28 13:57:02] [INFO] Auto cancel completed. Cancelled 4 PayPal pending orders
+[2025-09-28 19:13:28] [INFO] Starting auto cancel PayPal pending orders
+[2025-09-28 19:13:28] [INFO] Auto cancel completed. Cancelled 0 PayPal pending orders

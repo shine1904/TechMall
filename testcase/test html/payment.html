@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="csrf-token" content="">
+  <title>TechMall - Mua sắm điện thoại, laptop, phụ kiện</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+</head>
+<body>
+  <!-- Top Notification -->
+  <div class="topbar">
+    <div class="container">
+      <span>⚡ Giảm đến 50% | Freeship đơn từ 500k | Trả góp 0%</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">
+        <span class="logo-badge">Tech</span><span class="logo-text">Mall</span>
+      </a>
+
+      
+
+      <form class="search-box" action="#" method="get" role="search" aria-label="Tìm kiếm">
+        <input name="q" type="text" placeholder="Bạn muốn tìm gì? (Ví dụ: iPhone 15, Galaxy S24...)" aria-label="Ô tìm kiếm">
+        <button type="submit" aria-label="Tìm kiếm">🔍</button>
+      </form>
+
+    <nav class="quick-links">
+  <a href="#" class="quick-item" aria-label="Tra cứu đơn hàng">🧾 Đơn hàng</a>
+  <a href="cart.html" class="quick-item" aria-label="Giỏ hàng">🛒 Giỏ hàng</a>
+
+  <!-- Nút mặc định khi chưa đăng nhập -->
+  <a href="login.html" id="btnAccount" class="quick-item" aria-label="Tài khoản">👤 Tài khoản</a>
+
+  <!-- Panel hiện khi đã đăng nhập -->
+  <div id="userPanel" class="quick-item" style="display:none;">
+  👤 
+  <a id="userName" href="profile.html" style="text-decoration:none; color:inherit;"></a>
+  <button id="btnLogout">Đăng xuất</button>
+</div>
+</nav>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const btnAccount = document.getElementById("btnAccount");
+  const userPanel = document.getElementById("userPanel");
+  const userName = document.getElementById("userName");
+  const btnLogout = document.getElementById("btnLogout");
+
+  if (user && user.full_name) {
+    // Ẩn nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "none";
+
+    // Hiện panel user
+    if (userName) userName.textContent = user.full_name;
+    if (userPanel) userPanel.style.display = "inline-block";
+  } else {
+    // Nếu không có user -> hiển thị nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "inline-block";
+    if (userPanel) userPanel.style.display = "none";
+  }
+
+  // Đăng xuất
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+  }
+});
+</script>
+
+
+
+      <!-- Mobile drawer -->
+      <nav class="drawer">
+        <ul class="drawer-list">
+          <li><a href="#">Điện thoại</a></li>
+          <li><a href="#">Laptop</a></li>
+          <li><a href="#">Tablet</a></li>
+          <li><a href="#">Âm thanh</a></li>
+          <li><a href="#">Đồng hồ</a></li>
+          <li><a href="#">Phụ kiện</a></li>
+         
+         
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Category bar (desktop) -->
+    <div class="category-bar">
+      <div class="container cat-inner">
+        <a href="showproduct1.html">Điện thoại</a>
+        <a href="showproduct2.html">Laptop</a>
+        <a href="showproduct3.html">Đồng hồ</a>
+        <a href="showproduct4.html">Phụ kiện</a>
+
+      </div>
+    </div>
+  </header>
+   <style>
+    .payment-container {
+      max-width: var(--container, 800px);
+      margin: 40px auto;
+      padding: 0 16px;
+      color: #fff;
+    }
+    .payment-box {
+      background: linear-gradient(180deg,#0f1016,#0b0c10);
+      border: 1px solid #212537;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+    }
+    .payment-box h2 {
+      margin-bottom: 20px;
+      font-size: 22px;
+      color: var(--brand, #0af);
+    }
+    .order-info {
+      margin-bottom: 24px;
+      font-size: 17px;
+      font-weight: 600;
+    }
+    .order-info span {
+      display: block;
+      margin: 6px 0;
+    }
+    .methods {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .method {
+      background: #18191e;
+      border: 1px solid #23263a;
+      border-radius: 12px;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .method:hover {
+      border-color: var(--brand, #0af);
+    }
+    .method input {
+      margin-right: 8px;
+    }
+    .pay-btn {
+      background: var(--brand, #0af);
+      color: var(--brand-ink, #000);
+      border: none;
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      box-shadow: 0 2px 8px #0003;
+    }
+    .pay-btn:hover {
+      background: #fff;
+      color: #000;
+      transform: translateY(-1px) scale(1.03);
+    }
+  </style>
+</head>
+<body>
+  <!-- header có sẵn -->
+<main class="payment-container">
+  <div class="payment-box">
+    <h2>Xác nhận thanh toán</h2>
+
+    <div class="payment-content">
+      <div class="order-info">
+        <p><strong>Mã đơn hàng:</strong> <span id="order-id">---</span></p>
+        <p><strong>Tổng tiền:</strong> <span id="order-price">0₫</span></p>
+        <p><strong>Phương thức:</strong> <span id="order-method">---</span></p>
+      </div>
+
+      <form id="shipping-form">
+        <label for="fullname">Họ và tên</label>
+        <input type="text" id="fullname" name="fullname" required>
+
+        <label for="phone">Số điện thoại</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <label for="address">Địa chỉ</label>
+        <input type="text" id="address" name="address" required>
+
+        <button type="submit">Thanh toán</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+
+<!-- PayPal SDK -->
+
+<script>
+// payment.js
+const API_BASE = "http://localhost/ecommerce_api/index.php/api";
+const params = new URLSearchParams(window.location.search);
+const ORDER_ID = params.get("order_id");
+const PRICE = params.get("price");
+const METHOD = params.get("method"); // 'cod' | 'momo' | 'paypal'
+const token = localStorage.getItem("token");
+
+// Debug info
+console.log("Payment page loaded with:", { ORDER_ID, PRICE, METHOD, token: token ? "present" : "missing" });
+
+// 🔒 CSRF Manager
+const CSRFManager = {
+  getToken: () => {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') : '';
+  },
+  
+  addToHeaders: (headers = {}) => {
+    const csrfToken = CSRFManager.getToken();
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken;
+    }
+    return headers;
+  }
+};
+
+// ==== PAGE LOAD ====
+document.addEventListener("DOMContentLoaded", async () => {
+  if (!ORDER_ID) {
+    alert("Order ID missing");
+    window.location.href = "/test html/cart.html";
+    return;
+  }
+
+  // 🔒 SECURITY: Get CSRF token
+  try {
+    const csrfRes = await fetch(`${API_BASE}/csrf-token`, {
+      method: "GET",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    if (csrfRes.ok) {
+      const csrfData = await csrfRes.json();
+      if (csrfData.success && csrfData.data && csrfData.data.token) {
+        document.querySelector('meta[name="csrf-token"]').setAttribute('content', csrfData.data.token);
+      }
+    }
+  } catch (err) {
+    console.warn("Could not get CSRF token:", err);
+  }
+
+  // hiển thị order basic
+  document.getElementById("order-id").textContent = ORDER_ID;
+  document.getElementById("order-price").textContent = PRICE ? Number(PRICE).toLocaleString("vi-VN") + "₫" : "0₫";
+  document.getElementById("order-method").textContent = METHOD?.toUpperCase() || "---";
+
+  // load order details
+  try {
+    const res = await fetch(`${API_BASE}/orders/${ORDER_ID}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    
+    const data = await res.json().catch(() => ({}));
+    const order = data?.data || {};
+    const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+    function pickField(obj, keys) {
+      if (!obj) return "";
+      for (const k of keys) {
+        if (Object.prototype.hasOwnProperty.call(obj, k)) {
+          const v = obj[k];
+          if (v !== undefined && v !== null && String(v).trim() !== "") return v;
+        }
+      }
+      return "";
+    }
+
+    const phoneKeys = ["phone", "mobile", "phone_number"];
+    const addressKeys = ["address", "addr", "address_line"];
+
+    let fullnameVal = pickField(order, ["fullname","full_name"]) || pickField(localUser, ["full_name","fullname","name"]);
+    let phoneVal    = pickField(order, phoneKeys) || pickField(localUser, phoneKeys);
+    let addressVal  = pickField(order, addressKeys) || pickField(localUser, addressKeys);
+
+    // fallback sang /users/me nếu thiếu
+    if (!phoneVal || !addressVal) {
+      try {
+        const userRes = await fetch(`${API_BASE}/users/me`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        
+        if (!userRes.ok) {
+          throw new Error(`HTTP ${userRes.status}: ${userRes.statusText}`);
+        }
+        
+        const userJson = await userRes.json();
+        if (userJson.success) {
+          const u = userJson.data;
+          if (!fullnameVal && u.full_name) fullnameVal = u.full_name;
+          if (!phoneVal && u.phone) phoneVal = u.phone;
+          if (!addressVal && u.address) addressVal = u.address;
+        }
+      } catch (e) {
+        console.warn("Không lấy được user profile:", e);
+      }
+    }
+
+    if (fullnameVal) document.getElementById("fullname").value = fullnameVal;
+    if (phoneVal) document.getElementById("phone").value = phoneVal;
+    if (addressVal) document.getElementById("address").value = addressVal;
+  } catch (err) {
+    console.error("Không tải được order:", err);
+    alert("Lỗi tải thông tin đơn hàng: " + err.message);
+  }
+
+
+  // ==== SUBMIT FORM ====
+  document.getElementById("shipping-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fullname = document.getElementById("fullname").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const address = document.getElementById("address").value.trim();
+    if (!fullname || !phone || !address) { alert("Vui lòng điền đủ thông tin"); return; }
+
+    // 1) confirm order
+    try {
+      const updateRes = await fetch(`${API_BASE}/orders/${ORDER_ID}/confirm`, {
+        method: "PUT",
+        headers: CSRFManager.addToHeaders({ 
+          "Authorization": `Bearer ${token}`, 
+          "Content-Type": "application/json" 
+        }),
+        body: JSON.stringify({ fullname, phone, address })
+      });
+      
+      if (!updateRes.ok) {
+        throw new Error(`HTTP ${updateRes.status}: ${updateRes.statusText}`);
+      }
+      
+      const updateJson = await updateRes.json();
+      if (!updateJson.success) {
+        throw new Error(updateJson.message || "Failed to confirm order");
+      }
+    } catch (error) {
+      console.error("Error confirming order:", error);
+      alert("Không lưu được thông tin giao hàng: " + error.message);
+      return;
+    }
+
+    // 2) xử lý theo phương thức
+    if (METHOD === "cod") {
+      try {
+        const res = await fetch(`${API_BASE}/payment/${ORDER_ID}/cod`, {
+          method: "POST",
+          headers: CSRFManager.addToHeaders({ "Authorization": `Bearer ${token}` })
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
+        const r = await res.json();
+        if (r.success) {
+          window.location.href = `cart.html?status=success&order_id=${ORDER_ID}`;
+        } else {
+          throw new Error(r.message || "Lỗi xử lý COD");
+        }
+      } catch (error) {
+        console.error("COD payment error:", error);
+        alert("Lỗi xử lý COD: " + error.message);
+      }
+    } else if (METHOD === "momo") {
+      try {
+        const res = await fetch(`${API_BASE}/payment/${ORDER_ID}/momo`, {
+          method: "POST",
+          headers: CSRFManager.addToHeaders({ "Authorization": `Bearer ${token}` })
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
+        const r = await res.json();
+        if (r.success) {
+          if (r.data && r.data.payment_url) {
+            window.location.href = r.data.payment_url;
+          } else {
+            window.location.href = `cart.html?status=success&order_id=${ORDER_ID}`;
+          }
+        } else {
+          throw new Error(r.message || "Lỗi Momo");
+        }
+      } catch (error) {
+        console.error("MoMo payment error:", error);
+        alert("Lỗi Momo: " + error.message);
+      }
+    } else if (METHOD === "paypal") {
+      try {
+        const res = await fetch(`${API_BASE}/payment/${ORDER_ID}/paypal`, {
+          method: "POST",
+          headers: CSRFManager.addToHeaders({ "Authorization": `Bearer ${token}` })
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
+        const r = await res.json();
+        if (r.success && r.data && r.data.payment_url) {
+          window.location.href = r.data.payment_url;
+        } else {
+          throw new Error(r.message || "Không tạo được PayPal order");
+        }
+      } catch (error) {
+        console.error("PayPal payment error:", error);
+        alert("Lỗi PayPal: " + error.message);
+      }
+    } else {
+      alert("Phương thức thanh toán không hợp lệ");
+    }
+  });
+
+  // ==== HIỂN THỊ THÔNG BÁO TRÊN CART ====
+  const status = params.get("status");
+  const orderId = params.get("order_id");
+  if (status === "success" && orderId) {
+    alert(`Thanh toán thành công! Mã đơn hàng: ${orderId}`);
+    localStorage.removeItem("cart");
+
+    const cartContainer = document.getElementById("cart-container");
+    if (cartContainer) {
+      cartContainer.innerHTML = `
+        <div class="success-message">
+          🎉 Thanh toán thành công! Đơn hàng #${orderId} đã được ghi nhận.
+        </div>
+      `;
+    }
+
+    // xoá query khỏi url
+    window.history.replaceState({}, document.title, "cart.html");
+  }
+});
+</script>
+
+
+
+
+
+
+
+  
+<footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo footer-logo" href="#"><span class="logo-badge">Tech</span><span class="logo-text">Mall</span></a>
+        <p class="muted">© 2025 TechMall. Tất cả các quyền được bảo lưu.</p>
+        <p class="muted">Hotline: 1800 0000 (Miễn phí)</p>
+      </div>
+      <div>
+        <h4>Hỗ trợ khách hàng</h4>
+        <ul class="footer-list">
+          <li><a href="#">Trung tâm trợ giúp</a></li>
+          <li><a href="#">Hướng dẫn mua hàng</a></li>
+          <li><a href="#">Chính sách bảo hành</a></li>
+          <li><a href="#">Chính sách đổi trả</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Về TechMall</h4>
+        <ul class="footer-list">
+          <li><a href="#">Giới thiệu</a></li>
+          <li><a href="#">Tuyển dụng</a></li>
+          <li><a href="#">Hệ thống cửa hàng</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kết nối với chúng tôi</h4>
+        <div class="socials">
+          <a href="#" aria-label="Facebook">🌐</a>
+          <a href="#" aria-label="YouTube">▶️</a>
+          <a href="#" aria-label="Zalo">💬</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Overlay for mobile drawer -->
+  <label class="overlay" for="navCheck" aria-hidden="true"></label>
+</body>
+</html>

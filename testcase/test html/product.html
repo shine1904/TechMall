@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi tiết sản phẩm - Tech Mall</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .pd-specs {
+      margin-top: 30px;
+      background: rgba(40, 44, 52, 0.8);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .panel-head {
+      font-size: 1.4em;
+      font-weight: 600;
+      color: #ffd700;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #ffd700;
+    }
+    
+    .pd-specs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px 30px;
+    }
+    
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid #ffd700;
+      transition: all 0.3s ease;
+    }
+    
+    .spec-row:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+    
+    .spec-label {
+      font-weight: 500;
+      color: #e0e6ed;
+      flex: 1;
+      min-width: 120px;
+    }
+    
+    .spec-value {
+      font-weight: 600;
+      color: #fff;
+      text-align: right;
+      flex: 1;
+    }
+    
+    /* Guarantee section */
+    .pd-guarantee {
+      margin-top: 25px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+      border-radius: 12px;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+    }
+    
+    .guarantee-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 8px 0;
+      color: #e0e6ed;
+      transition: all 0.3s ease;
+    }
+    
+    .guarantee-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .guarantee-item:hover {
+      color: #ffd700;
+      transform: translateX(5px);
+    }
+    
+    .guarantee-item i {
+      color: #ffd700;
+      font-size: 16px;
+      margin-right: 12px;
+      min-width: 20px;
+    }
+    
+    .guarantee-item span {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .pd-specs-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      
+      .spec-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+      
+      .spec-value {
+        text-align: left;
+      }
+      
+      .pd-guarantee {
+        margin-top: 20px;
+        padding: 15px;
+      }
+      
+      .guarantee-item {
+        font-size: 13px;
+      }
+      
+      .guarantee-item i {
+        font-size: 14px;
+        margin-right: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Notification -->
+  <div class="topbar">
+    <div class="container">
+      <span>⚡ Giảm đến 50% | Freeship đơn từ 500k | Trả góp 0%</span>
+    </div>
+  </div>
+
+  <!-- Header (from index.html) -->
+  <header class="header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">
+        <span class="logo-badge">Tech</span><span class="logo-text">Mall</span>
+      </a>
+
+      <form class="search-box" action="#" method="get" role="search" aria-label="Tìm kiếm">
+        <input name="q" type="text" placeholder="Bạn muốn tìm gì? (Ví dụ: iPhone 15, Galaxy S24...)" aria-label="Ô tìm kiếm">
+        <button type="submit" aria-label="Tìm kiếm">🔍</button>
+      </form>
+
+      <nav class="quick-links">
+        <a href="#" class="quick-item" aria-label="Tra cứu đơn hàng">🧾 Đơn hàng</a>
+        <a href="cart.html" class="quick-item" aria-label="Giỏ hàng">🛒 Giỏ hàng</a>
+        <a href="login.html" id="btnAccount" class="quick-item" aria-label="Tài khoản">👤 Tài khoản</a>
+
+        <div id="userPanel" class="quick-item" style="display:none;">
+          👤 
+          <a id="userName" href="profile.html" style="text-decoration:none; color:inherit;"></a>
+          <button id="btnLogout">Đăng xuất</button>
+        </div>
+      </nav>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const user = JSON.parse(localStorage.getItem("user"));
+          const btnAccount = document.getElementById("btnAccount");
+          const userPanel = document.getElementById("userPanel");
+          const userName = document.getElementById("userName");
+          const btnLogout = document.getElementById("btnLogout");
+
+          if (user && user.full_name) {
+            if (btnAccount) btnAccount.style.display = "none";
+            if (userName) userName.textContent = user.full_name;
+            if (userPanel) userPanel.style.display = "inline-block";
+          } else {
+            if (btnAccount) btnAccount.style.display = "inline-block";
+            if (userPanel) userPanel.style.display = "none";
+          }
+
+          if (btnLogout) {
+            btnLogout.addEventListener("click", () => {
+              localStorage.clear();
+              window.location.href = "login.html";
+            });
+          }
+        });
+      </script>
+
+      <!-- Mobile drawer -->
+      <nav class="drawer">
+        <ul class="drawer-list">
+          <li><a href="#">Điện thoại</a></li>
+          <li><a href="#">Laptop</a></li>
+          <li><a href="#">Tablet</a></li>
+          <li><a href="#">Âm thanh</a></li>
+          <li><a href="#">Đồng hồ</a></li>
+          <li><a href="#">Phụ kiện</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Category bar (desktop) -->
+    <div class="category-bar">
+      <div class="container cat-inner">
+        <a href="showproduct1.html">Điện thoại</a>
+        <a href="showproduct2.html">Laptop</a>
+        <a href="showproduct3.html">Đồng hồ</a>
+        <a href="showproduct4.html">Phụ kiện</a>
+      </div>
+    </div>
+  </header>
+  <div class="container" style="padding-top: 20px;">
+    <div id="product-detail" class="product-detail">
+      <!-- JS sẽ render -->
+    </div>
+  </div>
+
+  <script>
+    // ✅ Tạo placeholder image SVG thống nhất
+    function createPlaceholderImage(width = 300, height = 300, text = "No Image") {
+      const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+        <rect width="${width}" height="${height}" fill="#f8f9fa"/>
+        <text x="${width/2}" y="${height/2}" text-anchor="middle" dy=".3em" font-family="Arial" font-size="16" fill="#6c757d">${text}</text>
+      </svg>`;
+      return `data:image/svg+xml;base64,${btoa(svg)}`;
+    }
+
+    async function loadProduct() {
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get("id");
+
+      if (!productId) {
+        document.getElementById("product-detail").innerHTML = '<div style="text-align: center; padding: 60px; color: #fff;"><h2>Không tìm thấy sản phẩm</h2><p>Vui lòng chọn sản phẩm từ danh sách.</p></div>';
+        return;
+      }
+
+      try {
+  const res = await fetch(`http://localhost/ecommerce_api/index.php/api/products/${productId}`);
+  const data = await res.json();
+
+        if (!data.success || !data.data) {
+          document.getElementById("product-detail").innerHTML = '<div style="text-align: center; padding: 60px; color: #fff;"><h2>Sản phẩm không tồn tại</h2><p>Sản phẩm này có thể đã được gỡ bỏ hoặc không còn tồn tại.</p></div>';
+          return;
+        }
+
+  const prod = data.data;
+  renderProductDetail(prod);
+
+  // Load recommended products by stock quantity desc (only once)
+  loadRecommended(prod.id);
+      } catch (err) {
+        console.error(err);
+        document.getElementById("product-detail").innerHTML = '<div style="text-align: center; padding: 60px; color: #fff;"><h2>Lỗi tải sản phẩm</h2><p>Không thể kết nối đến server. Vui lòng thử lại sau.</p></div>';
+      }
+    }
+
+    // ===== Helpers for thumbnails & fallback images =====
+    function getDefaultImagePath(){
+      return createPlaceholderImage();
+    }
+    function normalizeThumbList(raw){
+      if(!raw) return [];
+      if(Array.isArray(raw)) return raw.filter(Boolean);
+      if(typeof raw === 'string'){
+        const s = raw.trim();
+        try{ const parsed = JSON.parse(s); if(Array.isArray(parsed)) return parsed.filter(Boolean); }catch{}
+        return s.split(',').map(x=>x.trim()).filter(Boolean);
+      }
+      return [];
+    }
+
+    async function loadRecommended(currentId){
+      try{
+        const res = await fetch('http://localhost/ecommerce_api/index.php/api/products?limit=10&sort=stock_desc');
+        const json = await res.json();
+        if(json.success && Array.isArray(json.data)){
+          const items = json.data.filter(p => p.id != currentId).slice(0,8);
+          renderRecommendations(items);
+        }
+      }catch(e){ console.warn('Recommend load error', e); }
+    }
+
+    function renderRecommendations(list){
+      const container = document.getElementById('product-detail');
+      const wrap = document.createElement('div');
+      wrap.className = 'recom-section';
+      wrap.innerHTML = `
+        <div class="recom-head">
+          <h3>Có thể bạn cũng thích</h3>
+          <a href="showproduct1.html">Xem tất cả</a>
+        </div>
+        <div class="recom-wrap">
+          <button class="recom-nav recom-prev" aria-label="Prev">‹</button>
+          <div class="recom-row">
+            ${list.map(p => {
+              const t = normalizeThumbList(p.thumbnail);
+              const img = t[0] || getDefaultImagePath();
+              const name = p.product_name || '';
+              const price = Number(p.price||0);
+              const old = Number(p.old_price||0);
+              const priceStr = price.toLocaleString('vi-VN') + '₫';
+              const oldStr = old && old > price ? old.toLocaleString('vi-VN') + '₫' : '';
+              const discount = old && old > price ? Math.round((1 - price/old)*100) + '%' : '';
+              return `
+                <div class="recom-card">
+                  <img class="recom-thumb" src="${img}" alt="${name}" onerror="this.onerror=null; this.src=getDefaultImagePath();">
+                  <h4 class="recom-name">${name}</h4>
+                  <div>
+                    ${oldStr ? `<span class=\"recom-old\">${oldStr}</span>` : ''}
+                    ${discount ? `<span class=\"recom-discount\">-${discount}</span>` : ''}
+                  </div>
+                  <div class="recom-price">${priceStr}</div>
+                  <div class="recom-actions">
+                    <a class="btn btn-primary" href="product.html?id=${p.id}">Xem</a>
+                    <button class="btn btn-outline" onclick="addToCart(${p.id})">Thêm</button>
+                  </div>
+                </div>`;
+            }).join('')}
+          </div>
+          <button class="recom-nav recom-next" aria-label="Next">›</button>
+        </div>`;
+
+      container.appendChild(wrap);
+
+      const row = wrap.querySelector('.recom-row');
+      wrap.querySelector('.recom-prev').onclick = () => row.scrollBy({left:-300, behavior:'smooth'});
+      wrap.querySelector('.recom-next').onclick = () => row.scrollBy({left:300, behavior:'smooth'});
+    }
+
+ function renderProductDetail(prod) {
+  const container = document.getElementById("product-detail");
+
+  // Tách mô tả thành các cặp key:value theo dấu phẩy và dấu hai chấm
+  function parseDescription(description) {
+    if (!description) return [];
+    
+    // Tách theo dấu phẩy trước
+    const items = description.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    const pairs = [];
+    
+    items.forEach((item, index) => {
+      let key = '', value = '';
+      
+      if (item.includes(':')) {
+        // Có dấu hai chấm - tách theo dấu hai chấm
+        const colonIndex = item.indexOf(':');
+        key = item.substring(0, colonIndex).trim();
+        value = item.substring(colonIndex + 1).trim();
+      } else {
+        // Không có dấu hai chấm - thử tách theo pattern số + đơn vị
+        const match = item.match(/^(.+?)(\d+[\d\s]*(?:[a-zA-Z]+|₫|%|mAh|W|GB|TB|MP|inch|mm|g|kg).*?)$/i);
+        if (match) {
+          key = match[1].trim();
+          value = match[2].trim();
+        } else {
+          // Nếu không match được gì, dùng làm key với value trống
+          key = item;
+          value = '-';
+        }
+      }
+      
+      // Làm sạch key và value
+      key = key.replace(/^[-:\s]+|[-:\s]+$/g, '').trim();
+      value = value.replace(/^[-:\s]+|[-:\s]+$/g, '').trim();
+      
+      if (key) {
+        pairs.push({ key, value: value || '-' });
+      }
+    });
+    
+    return pairs;
+  }
+
+  const descriptionPairs = parseDescription(prod.description);
+
+  const thumbs = normalizeThumbList(prod.thumbnail);
+  const mainImg = thumbs[0] || getDefaultImagePath();
+
+  container.innerHTML = `
+    <div class="pd-top">
+      <div class="pd-gallery">
+        <img class="pd-main-img" src="${mainImg}" alt="${prod.product_name}" onerror="this.onerror=null; this.src=getDefaultImagePath();">
+        <div class="pd-thumbs">
+          ${(thumbs.length ? thumbs : [getDefaultImagePath()]).map(img => `
+            <img class=\"pd-thumb\" src=\"${img}\" onclick=\"document.querySelector('.pd-main-img').src='${img}'\" onerror=\"this.onerror=null; this.src=getDefaultImagePath();\">
+          `).join("")}
+        </div>
+      </div>
+      <div class="pd-info">
+        <h2 class="pd-title">${prod.product_name}</h2>
+        <div class="pd-price-block">
+          <span class="pd-price">${Number(prod.price || 0).toLocaleString('vi-VN')}₫</span>
+          ${prod.old_price && prod.old_price > prod.price ? `
+            <span class="pd-old-price">${Number(prod.old_price).toLocaleString('vi-VN')}₫</span>
+          ` : ""}
+        </div>
+        <p class="pd-meta"><strong>Loại:</strong> ${prod.product_type || 'Đang cập nhật'}</p>
+        <p class="pd-meta"><strong>Tồn kho:</strong> ${prod.stock_quantity || 0} sản phẩm</p>
+        <div class="pd-actions">
+          <button class="btn btn-primary" onclick="addToCart(${prod.id})">Thêm vào giỏ hàng</button>
+        </div>
+        
+        <!-- Thông tin bổ sung -->
+        <div class="pd-guarantee">
+          <div class="guarantee-item">
+            <i class="fas fa-shipping-fast"></i>
+            <span>Miễn phí vận chuyển cho đơn hàng giá trị > 1 triệu đồng tại nội thành Hồ Chí Minh</span>
+          </div>
+          <div class="guarantee-item">
+            <i class="fas fa-certificate"></i>
+            <span>Đảm bảo sản phẩm chính hãng 100%</span>
+          </div>
+          <div class="guarantee-item">
+            <i class="fas fa-box"></i>
+            <span>Đảm bảo sản phẩm mới nguyên seal, chưa active</span>
+          </div>
+          <div class="guarantee-item">
+            <i class="fas fa-shield-alt"></i>
+            <span>Uy tín đặt lên hàng đầu</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pd-specs">
+      <div class="panel-head">Thông tin chi tiết về Sản phẩm</div>
+      <div class="pd-specs-grid">
+        ${descriptionPairs.map((pair) => `
+          <div class="spec-row">
+            <div class="spec-label">${pair.key}</div>
+            <div class="spec-value">${pair.value}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+
+
+
+
+    // Add to cart function - sử dụng API như index.html
+    async function addToCart(productId) {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Bạn cần đăng nhập để thêm vào giỏ hàng!");
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        console.log("Adding to cart - Product ID:", productId);
+        console.log("Token:", token);
+        
+        const res = await fetch(`http://localhost/ecommerce_api/index.php/api/cart`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({
+            product_id: productId,
+            quantity: 1
+          })
+        });
+
+        console.log("Response status:", res.status);
+        const data = await res.json();
+        console.log("Response data:", data);
+        
+        if (data.success) {
+          alert("✅ Đã thêm sản phẩm vào giỏ hàng!");
+        } else {
+          alert("❌ Lỗi: " + data.message);
+        }
+      } catch (err) {
+        console.error("Lỗi khi thêm giỏ:", err);
+        alert("Không thể thêm vào giỏ hàng!");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadProduct);
+  </script>
+  <!-- Footer (from index.html) -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo footer-logo" href="#"><span class="logo-badge">Tech</span><span class="logo-text">Mall</span></a>
+        <p class="muted">© 2025 TechMall. Tất cả các quyền được bảo lưu.</p>
+        <p class="muted">Hotline: 1800 0000 (Miễn phí)</p>
+      </div>
+      <div>
+        <h4>Hỗ trợ khách hàng</h4>
+        <ul class="footer-list">
+          <li><a href="#">Trung tâm trợ giúp</a></li>
+          <li><a href="#">Hướng dẫn mua hàng</a></li>
+          <li><a href="#">Chính sách bảo hành</a></li>
+          <li><a href="#">Chính sách đổi trả</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Về TechMall</h4>
+        <ul class="footer-list">
+          <li><a href="#">Giới thiệu</a></li>
+          <li><a href="#">Tuyển dụng</a></li>
+          <li><a href="#">Hệ thống cửa hàng</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kết nối với chúng tôi</h4>
+        <div class="socials">
+          <a href="#" aria-label="Facebook">🌐</a>
+          <a href="#" aria-label="YouTube">▶️</a>
+          <a href="#" aria-label="Zalo">💬</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Overlay for mobile drawer -->
+  <label class="overlay" for="navCheck" aria-hidden="true"></label>
+</body>
+</html>

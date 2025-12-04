@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thông tin người dùng - TechMall</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+   <header class="header">
+    <div class="container header-inner" aria-label="Trang chủ">
+      <a class="logo" href="index.html">
+        <span class="logo-badge">Tech</span><span class="logo-text">Mall</span>
+      </a>
+
+      
+
+      <form class="search-box" action="#" method="get" role="search" aria-label="Tìm kiếm">
+        <input name="q" type="text" placeholder="Bạn muốn tìm gì? (Ví dụ: iPhone 15, Galaxy S24...)" aria-label="Ô tìm kiếm">
+        <button type="submit" aria-label="Tìm kiếm">🔍</button>
+      </form>
+
+      <nav class="quick-links">
+        <a href="#" class="quick-item" aria-label="Tra cứu đơn hàng">🧾 Đơn hàng</a>
+        <a href="cart.html" class="quick-item" aria-label="Giỏ hàng">🛒 Giỏ hàng</a>
+         <a href="login.html" id="btnAccount" class="quick-item" aria-label="Tài khoản">👤 Tài khoản</a>
+
+  <!-- Panel hiện khi đã đăng nhập -->
+  <div id="userPanel" class="quick-item" style="display:none;">
+  👤 
+  <a id="userName" href="profile.html" style="text-decoration:none; color:inherit;"></a>
+  <button id="btnLogout">Đăng xuất</button>
+</div>
+</nav>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const btnAccount = document.getElementById("btnAccount");
+  const userPanel = document.getElementById("userPanel");
+  const userName = document.getElementById("userName");
+  const btnLogout = document.getElementById("btnLogout");
+
+  if (user && user.full_name) {
+    // Ẩn nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "none";
+
+    // Hiện panel user
+    if (userName) userName.textContent = user.full_name;
+    if (userPanel) userPanel.style.display = "inline-block";
+  } else {
+    // Nếu không có user -> hiển thị nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "inline-block";
+    if (userPanel) userPanel.style.display = "none";
+  }
+
+  // Đăng xuất
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+  }
+});
+</script>
+
+     
+      
+    </div>
+
+    <!-- Category bar (desktop) -->
+     <div class="category-bar">
+      <div class="container cat-inner">
+        <a href="showproduct1.html">Điện thoại</a>
+        <a href="showproduct2.html">Laptop</a>
+        <a href="showproduct3.html">Đồng hồ</a>
+        <a href="showproduct4.html">Phụ kiện</a>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- User Info Form -->
+<section class="profile-page">
+  <div class="profile-container">
+    <h1>Thông tin người dùng</h1>
+    <form id="profileForm">
+      
+      <div class="form-group">
+        <label for="full_name">Họ và tên</label>
+        <input type="text" id="full_name" name="full_name" placeholder="Nhập họ và tên" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Nhập email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Số điện thoại</label>
+        <input type="text" id="phone" name="phone" placeholder="Nhập số điện thoại">
+      </div>
+
+      <div class="form-group">
+        <label for="address">Địa chỉ</label>
+        <input type="text" id="address" name="address" placeholder="Nhập địa chỉ">
+      </div>
+      <div class="form-group">
+        <label for="current_password">Mật khẩu hiện tại</label>
+        <input type="password" id="current_password" name="current_password" placeholder="Nhập mật khẩu hiện tại">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mật khẩu mới</label>
+        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu mới">
+      </div>
+
+      <div class="form-group">
+        <label for="confirm_password">Xác nhận mật khẩu mới</label>
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Nhập lại mật khẩu mới">
+      </div>
+
+      <button type="submit" class="btn-primary">Cập nhật</button>
+    </form>
+  </div>
+</section>
+
+</section>
+
+
+  <!-- Footer -->
+
+
+  <script>
+// =========================
+// Helpers
+// =========================
+function getAuthToken() {
+  return localStorage.getItem("token");
+}
+function getUser() {
+  return JSON.parse(localStorage.getItem("user"));
+}
+function setUser(user) {
+  localStorage.setItem("user", JSON.stringify(user));
+}
+function authHeaders() {
+  const token = getAuthToken();
+  return {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + token
+  };
+}
+function ensureLoggedIn() {
+  const token = getAuthToken();
+  if (!token) {
+    alert("Vui lòng đăng nhập để xem trang này.");
+    window.location.href = "login.html";
+    return false;
+  }
+  return true;
+}
+function handleUnauthorized() {
+  localStorage.clear();
+  alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+  window.location.href = "login.html";
+}
+
+// =========================
+// Load user info
+// =========================
+async function loadUserInfo() {
+  if (!ensureLoggedIn()) return;
+
+  const user = getUser();
+  if (!user || !user.id) {
+    alert("Không tìm thấy thông tin user. Vui lòng đăng nhập lại.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost/ecommerce_api/index.php/api/users/${user.id}`, {
+      method: "GET",
+      headers: authHeaders()
+    });
+
+    if (res.status === 401) return handleUnauthorized();
+
+    const data = await res.json();
+    console.log("User info:", data);
+
+    if (data.success) {
+      const u = data.data;
+      document.getElementById("full_name").value = u.full_name || "";
+      document.getElementById("email").value = u.email || "";
+      document.getElementById("phone").value = u.phone || "";
+      document.getElementById("address").value = u.address || "";
+      setUser(u);
+    } else {
+      alert(data.message || "Không thể tải thông tin người dùng.");
+    }
+  } catch (err) {
+    console.error("Lỗi khi load user info:", err);
+    alert("Lỗi kết nối khi tải thông tin người dùng.");
+  }
+}
+
+// =========================
+// Update user info
+// =========================
+document.getElementById("profileForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!ensureLoggedIn()) return;
+
+  const user = getUser();
+  if (!user || !user.id) {
+    alert("Không tìm thấy user. Vui lòng đăng nhập lại.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const payload = {
+    full_name: document.getElementById("full_name").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    phone: document.getElementById("phone").value.trim() || null,
+    address: document.getElementById("address").value.trim() || null
+  };
+
+  const currentPwd = document.getElementById("current_password")?.value || "";
+  const newPwd = document.getElementById("password")?.value || "";
+  const confirmPwd = document.getElementById("confirm_password")?.value || "";
+
+  // Nếu có nhập mật khẩu mới thì bắt buộc kiểm tra logic đổi mật khẩu
+  if (newPwd || confirmPwd || currentPwd) {
+    if (!currentPwd) {
+      alert("Vui lòng nhập mật khẩu hiện tại.");
+      return;
+    }
+    if (!newPwd) {
+      alert("Vui lòng nhập mật khẩu mới.");
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      alert("Mật khẩu mới và xác nhận không khớp.");
+      return;
+    }
+
+    payload.current_password = currentPwd;
+    payload.password = newPwd;
+  }
+
+  try {
+    const res = await fetch(`http://localhost/ecommerce_api/index.php/api/users/${user.id}`, {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify(payload)
+    });
+
+    if (res.status === 401) return handleUnauthorized();
+
+    const result = await res.json();
+    console.log("Update result:", result);
+
+    if (res.ok && result.success) {
+      alert("Cập nhật thông tin thành công!");
+
+      const currentUser = getUser() || {};
+      const updatedUser = { ...currentUser, ...(result.data || payload) };
+      setUser(updatedUser);
+
+      // Reset mật khẩu sau khi đổi
+      document.getElementById("current_password").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("confirm_password").value = "";
+    } else {
+      if (result.errors) {
+        alert("Lỗi:\n" + Object.values(result.errors).join("\n"));
+      } else {
+        alert(result.message || "Cập nhật thất bại");
+      }
+    }
+  } catch (err) {
+    console.error("Lỗi update:", err);
+    alert("Lỗi kết nối khi cập nhật thông tin.");
+  }
+});
+
+// =========================
+// Logout button
+// =========================
+const btnLogout = document.getElementById("btnLogout");
+if (btnLogout) {
+  btnLogout.addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "login.html";
+  });
+}
+
+// =========================
+// Init
+// =========================
+document.addEventListener("DOMContentLoaded", loadUserInfo);
+</script>
+
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo footer-logo" href="#"><span class="logo-badge">Tech</span><span class="logo-text">Mall</span></a>
+        <p class="muted">© 2025 TechMall. Tất cả các quyền được bảo lưu.</p>
+        <p class="muted">Hotline: 1800 0000 (Miễn phí)</p>
+      </div>
+      <div>
+        <h4>Hỗ trợ khách hàng</h4>
+        <ul class="footer-list">
+          <li><a href="#">Trung tâm trợ giúp</a></li>
+          <li><a href="#">Hướng dẫn mua hàng</a></li>
+          <li><a href="#">Chính sách bảo hành</a></li>
+          <li><a href="#">Chính sách đổi trả</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Về TechMall</h4>
+        <ul class="footer-list">
+          <li><a href="#">Giới thiệu</a></li>
+          <li><a href="#">Tuyển dụng</a></li>
+          <li><a href="#">Hệ thống cửa hàng</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kết nối với chúng tôi</h4>
+        <div class="socials">
+          <a href="#" aria-label="Facebook">🌐</a>
+          <a href="#" aria-label="YouTube">▶️</a>
+          <a href="#" aria-label="Zalo">💬</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+</body>
+</html>

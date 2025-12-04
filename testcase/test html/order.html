@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giỏ hàng - Tech Mall</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+   <!-- Top Notification -->
+  <div class="topbar">
+    <div class="container">
+      <span>⚡ Giảm đến 50% | Freeship đơn từ 500k | Trả góp 0%</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html" aria-label="Trang chủ">
+        <span class="logo-badge">Tech</span><span class="logo-text">Mall</span>
+      </a>
+
+
+      <form class="search-box" action="#" method="get" role="search" aria-label="Tìm kiếm">
+        <input name="q" type="text" placeholder="Bạn muốn tìm gì? (Ví dụ: iPhone 15, Galaxy S24...)" aria-label="Ô tìm kiếm">
+        <button type="submit" aria-label="Tìm kiếm">🔍</button>
+      </form>
+
+      <nav class="quick-links">
+        <a href="#" class="quick-item" aria-label="Tra cứu đơn hàng">🧾 Đơn hàng</a>
+        <a href="cart.html" class="quick-item" aria-label="Giỏ hàng">🛒 Giỏ hàng</a>
+          <a href="login.html" id="btnAccount" class="quick-item" aria-label="Tài khoản">👤 Tài khoản</a>
+
+  <!-- Panel hiện khi đã đăng nhập -->
+  <div id="userPanel" class="quick-item" style="display:none;">
+  👤 
+  <a id="userName" href="profile.html" style="text-decoration:none; color:inherit;"></a>
+  <button id="btnLogout">Đăng xuất</button>
+</div>
+</nav>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const btnAccount = document.getElementById("btnAccount");
+  const userPanel = document.getElementById("userPanel");
+  const userName = document.getElementById("userName");
+  const btnLogout = document.getElementById("btnLogout");
+
+  if (user && user.full_name) {
+    // Ẩn nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "none";
+
+    // Hiện panel user
+    if (userName) userName.textContent = user.full_name;
+    if (userPanel) userPanel.style.display = "inline-block";
+  } else {
+    // Nếu không có user -> hiển thị nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "inline-block";
+    if (userPanel) userPanel.style.display = "none";
+  }
+
+  // Đăng xuất
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+  }
+});
+</script>
+      <!-- Mobile drawer -->
+      <nav class="drawer">
+        <ul class="drawer-list">
+          <li><a href="#">Điện thoại</a></li> 
+          <li><a href="#">Laptop</a></li>
+          <li><a href="#">Tablet</a></li>
+          <li><a href="#">Âm thanh</a></li>
+          <li><a href="#">Đồng hồ</a></li>
+          <li><a href="#">Phụ kiện</a></li>
+         
+         
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Category bar (desktop) -->
+
+<!-- Edit Order Modal (moved to page bottom) -->
+    <div class="category-bar">
+      <div class="container cat-inner">
+        <a href="showproduct1.html">Điện thoại</a>
+        <a href="showproduct2.html">Laptop</a>
+        <a href="showproduct3.html">Đồng hồ</a>
+        <a href="showproduct4.html">Phụ kiện</a>
+
+      </div>
+    </div>
+  </header>
+<main class="orders-container">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>Danh sách đơn hàng</h2>
+    <button onclick="loadOrders();" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+      🔄 Refresh
+    </button>
+  </div>
+  <table id="orders-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Họ và tên</th>
+        <th>SĐT</th>
+        <th>Địa chỉ</th>
+        <th>Phương thức</th>
+        <th>TT Thanh toán</th>
+        <th>Trạng thái đơn hàng </th>
+        <th>Tổng tiền</th>
+        <th>Ngày tạo</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</main>
+
+
+
+<script>
+const API_BASE = "http://localhost/ecommerce_api/index.php/api";
+
+let _ordersCache = [];
+
+async function loadOrders() {
+  const token = localStorage.getItem("token");
+  let role = localStorage.getItem("role"); // "admin" hoặc "user"
+
+  try {
+    if (!role) {
+      const stored = JSON.parse(localStorage.getItem("user") || "null");
+      if (stored) {
+        // Nếu backend trả về role trực tiếp
+        if (stored.role) role = stored.role;
+
+        // Kiểm tra mảng roles
+        if (!role && Array.isArray(stored.roles)) {
+          if (stored.roles.includes("super_admin") || stored.roles.includes("order_admin")) {
+            role = "admin";
+          }
+        } 
+
+        // Kiểm tra flag cũ
+        if (!role && (stored.is_admin === true || stored.isAdmin === true)) {
+          role = "admin";
+        }
+      }
+    }
+  } catch (e) {
+    console.debug("[orders] cannot parse local user for role", e);
+  }
+
+  role = (role || "user").toString().toLowerCase();
+  console.debug("[orders] role resolved to", role);
+
+  if (!token) {
+    console.error("❌ [loadOrders] No token found!");
+    alert("Bạn chưa đăng nhập!");
+    window.location.href = "login.html";
+    return;
+  }
+  
+
+  try {
+    const res = await fetch(`${API_BASE}/orders?t=${Date.now()}`, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache"
+      },
+    });
+
+
+    if (!res.ok) {
+      console.error("❌ [loadOrders] API request failed:", res.status, res.statusText);
+      alert("Không tải được đơn hàng (HTTP " + res.status + ")");
+      return;
+    }
+
+    const rawBody = await res.text();
+    
+    let result;
+    try {
+      result = JSON.parse(rawBody);
+    } catch (e) {
+      console.error("❌ [loadOrders] failed to parse JSON, raw body:", rawBody);
+      alert("Lỗi server khi tải đơn hàng. Kiểm tra console.");
+      return;
+    }
+
+    let orders = [];
+    
+    if (Array.isArray(result)) {
+      orders = result;
+    } else if (result && Array.isArray(result.data)) {
+      orders = result.data;
+    } else if (result && result.success && Array.isArray(result.orders)) {
+      orders = result.orders;
+    } else if (result && result.success && Array.isArray(result.data?.orders)) {
+      orders = result.data.orders;
+    } else {
+      console.error("❌ [loadOrders] unexpected response shape", result);
+      alert("Không thể hiểu dữ liệu đơn hàng từ server.");
+      return;
+    }
+
+    _ordersCache = orders;
+    console.debug("[orders] fetched", orders);
+
+    const table = document.querySelector("#orders-table");
+    
+    const tbody = document.querySelector("#orders-table tbody");
+    
+    if (!table) {
+      console.error("❌ [loadOrders] Table not found!");
+      return;
+    }
+    
+    if (!tbody) {
+      console.error("❌ [loadOrders] Table body not found!");
+      return;
+    }
+    
+    tbody.innerHTML = "";
+
+    if (orders.length === 0) {
+      console.log("📭 [loadOrders] No orders to display");
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center">Chưa có đơn hàng</td></tr>`;
+      return;
+    }
+    
+
+   orders.forEach((o, index) => {
+  const tr = document.createElement("tr");
+  tr.dataset.orderId = o.id;
+  tr.innerHTML = `
+    <td>${o.id}</td>
+    <td>${o.fullname || "-"}</td>
+    <td>${o.phone || "-"}</td>
+    <td>${o.address || "-"}</td>
+    <td>${o.payment_method || "-"}</td>
+    <td>${o.payment_status || "-"}</td>
+    <td>${o.status || "-"}</td>
+    <td>${new Intl.NumberFormat("vi-VN").format(Number(o.total) || 0)}₫</td>
+    <td>${o.created_at ? new Date(o.created_at).toLocaleString("vi-VN") : "-"}</td>
+    <td class="actions"></td>
+  `;
+
+  const actionsCell = tr.querySelector(".actions");
+  const paymentStatus = String(o.payment_status || "").toLowerCase();
+  const status = String(o.status || "").toLowerCase();
+  const method = String(o.payment_method || "").toLowerCase();
+
+  // Kiểm tra thời gian 1 giờ
+  const orderTime = new Date(o.created_at).getTime();
+  const currentTime = new Date().getTime();
+  const hourDiff = (currentTime - orderTime) / (1000 * 60 * 60); // Convert to hours
+  const canEditShipping = hourDiff <= 1; // Có thể sửa shipping trong vòng 1 giờ
+
+  const isCanceled = paymentStatus === "failed" && status === "cancelled";
+
+  if (isCanceled) {
+    actionsCell.innerHTML = `<span class="muted"> Đơn đã hủy</span>`;
+  } else if (role === "user") {
+    if (status === "cancel_request") {
+      actionsCell.innerHTML = `<span> Đang chờ xác nhận hủy</span>`;
+    } else if (status === "pending") {
+      if (method === "cod") {
+        if (canEditShipping) {
+          actionsCell.innerHTML = `
+            <button class="order-btn order-btn--ghost order-btn--sm" onclick="editShipping(${o.id})">✏️ Sửa shipping</button>
+            <button class="order-btn order-btn--danger order-btn--sm" id="cancel-btn-${o.id}" onclick="requestCancel(${o.id})">❌ Hủy đơn</button>
+          `;
+        } else {
+          actionsCell.innerHTML = `<span class="muted"> Đã quá thời gian chỉnh sửa</span>`;
+        }
+      } else if (method === "paypal") {
+        if (canEditShipping) {
+          actionsCell.innerHTML = `
+           <button class="order-btn order-btn--primary order-btn--sm"
+    onclick="continuePayment(${o.id})">
+     Tiếp tục thanh toán
+  </button>
+
+            <button class="order-btn order-btn--ghost order-btn--sm" onclick="editShipping(${o.id})"> Sửa địa chỉ</button>
+            <button class="order-btn order-btn--danger order-btn--sm" id="cancel-btn-${o.id}" onclick="requestCancel(${o.id})"> Hủy đơn</button>
+          `;
+        } else {
+          actionsCell.innerHTML = `
+            <span class="muted"> Vui lòng chờ nhận hàng</span>
+          `;
+        }
+      }
+    } else if (status === "confirmed" && paymentStatus === "paid") {
+      // PayPal paid orders: hiển thị nút sửa shipping nếu trong vòng 1 giờ
+      if (canEditShipping && method === "paypal") {
+        actionsCell.innerHTML = `
+          <button class="order-btn order-btn--ghost order-btn--sm" onclick="editShipping(${o.id})"> Sửa địa chỉ</button>
+          <button class="order-btn order-btn--ghost order-btn--sm" id="cancel-btn-${o.id}" onclick="requestCancel(${o.id})">Yêu cầu hủy</button>
+        `;
+      } else {
+        actionsCell.innerHTML = `<span class="muted"> Đã quá thời gian chỉnh sửa</span>`;
+      }
+    } else {
+      actionsCell.innerHTML = `<span>-</span>`;
+    }
+  } else if (role === "admin") {
+    // Admin chỉ có thể xác nhận hủy đơn hàng, không thể tự hủy hoặc sửa shipping
+    if (status === "cancel_request") {
+      actionsCell.innerHTML = `
+        <button class="order-btn order-btn--primary order-btn--sm" onclick="confirmCancel(${o.id})"> Xác nhận hủy</button>
+      `;
+    } else {
+      actionsCell.innerHTML = `<span class="muted">Chỉ có thể xác nhận hủy đơn</span>`;
+    }
+  }
+
+  tbody.appendChild(tr); // QUAN TRỌNG: thêm dòng này để render
+});
+
+    
+
+
+} catch (err) {
+    console.error(" [loadOrders] JS Error:", err);
+    alert("Không tải được đơn hàng (lỗi JS)");
+  }
+}
+
+// DOM ready
+document.addEventListener("DOMContentLoaded", function() {
+  loadOrders();
+});
+
+
+// ===== User actions =====
+async function editShipping(orderId) {
+  // Open modal and prefill with current order data from _ordersCache
+  const modal = document.getElementById('editOrderModal');
+  const editId = document.getElementById('editOrderId');
+  const fn = document.getElementById('edit_fullname');
+  const ph = document.getElementById('edit_phone');
+  const addr = document.getElementById('edit_address');
+
+  editId.value = orderId;
+  const o = _ordersCache.find(x => String(x.id) === String(orderId)) || {};
+  fn.value = o.fullname || o.full_name || o.name || "";
+  ph.value = o.phone || o.mobile || "";
+  addr.value = o.address || o.addr || "";
+
+  modal.style.display = 'flex';
+
+  // Hook up cancel
+  document.getElementById('cancelEdit').onclick = () => { modal.style.display = 'none'; };
+
+  // Submit handler
+  document.getElementById('editOrderForm').onsubmit = async (ev) => {
+    ev.preventDefault();
+    const fullname = fn.value.trim();
+    const phone = ph.value.trim();
+    const address = addr.value.trim();
+    const id = editId.value;
+    try {
+      await fetch(`${API_BASE}/orders/${id}`, {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullname, phone, address })
+      });
+      modal.style.display = 'none';
+      loadOrders();
+    } catch (err) {
+      console.error('[editOrderForm] submit failed', err);
+      alert('Lỗi khi lưu thay đổi');
+    }
+  };
+}
+
+async function requestCancel(orderId, actor = 'user') {
+  const order = _ordersCache.find(x => String(x.id) === String(orderId)) || {};
+  const payment_status = String(order.payment_status || '').toLowerCase();
+
+  // Xác nhận hành động
+  if (actor === 'admin') {
+    if (!confirm(`Admin xác nhận hủy đơn #${orderId}? Hành động này KHÔNG thể hoàn tác.`)) return;
+  } else {
+    if (payment_status === 'pending') {
+      if (!confirm('Bạn muốn hủy đơn hàng đang chờ thanh toán?')) return;
+    } else if (payment_status === 'paid') {
+      if (!confirm('Đơn đã thanh toán. Gửi yêu cầu hủy tới admin?')) return;
+    } else {
+      alert(`Không thể hủy đơn (payment_status: ${payment_status})`);
+      return;
+    }
+  }
+
+  const btnIds = [`cancel-btn-${orderId}`, `admin-cancel-btn-${orderId}`];
+  const btn = btnIds.map(id => document.getElementById(id)).find(x => x);
+  if (btn) btn.disabled = true;
+
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/orders/${orderId}/user-update`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ cancel: true, actor })
+    });
+
+    const raw = await res.text();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      console.error('[requestCancel] non-json response', raw);
+      alert('Lỗi server khi hủy đơn. Kiểm tra console hoặc backend.');
+      return;
+    }
+
+    if (res.ok && (data.success || data.status === 'ok')) {
+      const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
+      const idx = _ordersCache.findIndex(x => String(x.id) === String(orderId));
+
+      // Admin không thể tự hủy đơn hàng nữa
+      if (actor === 'admin') {
+        alert('Admin không thể tự hủy đơn hàng. Chỉ có thể xác nhận hủy đơn từ yêu cầu của user.');
+        return;
+      } else {
+        if (payment_status === 'pending') {
+          // Hủy ngay
+          if (idx !== -1) {
+            _ordersCache[idx].status = 'cancelled';
+            _ordersCache[idx].payment_status = 'failed';
+          }
+          alert('Đã hủy đơn.');
+          if (row) row.querySelector('.actions').innerHTML = `<span> Đã hủy</span>`;
+          loadOrders();
+        } else if (payment_status === 'paid') {
+          // Gửi yêu cầu hủy
+          if (idx !== -1) {
+            _ordersCache[idx].status = 'cancel_request';
+          }
+          alert('Yêu cầu hủy đã được gửi.');
+          if (row) row.querySelector('.actions').innerHTML = `<span> Đang chờ xác nhận</span>`;
+          loadOrders();
+        }
+      }
+    } else {
+      const msg = data?.message || data?.error || `HTTP ${res.status}`;
+      alert(`Không thể hủy đơn: ${msg}`);
+    }
+  } catch (err) {
+    console.error('[requestCancel] failed', err);
+    alert('Lỗi khi gửi yêu cầu hủy. Thử lại sau.');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+
+// ===== Admin actions =====
+// Admin chỉ có thể xác nhận hủy đơn hàng, không thể sửa hoặc xóa đơn hàng
+
+async function confirmCancel(orderId) {
+  if (!confirm("Bạn có chắc muốn xác nhận hủy đơn hàng này?")) return;
+  await fetch(`${API_BASE}/orders/${orderId}/confirm`, {
+    method: "PUT",
+    headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+  });
+  loadOrders();
+}
+async function continuePayment(orderId) {
+  try {
+    const response = await fetch(`${API_BASE}/payment/${orderId}/continue`, {
+      method: "GET",
+      headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Không thể tiếp tục thanh toán");
+    }
+    
+    const orderData = await response.json();
+    
+    // Lưu thông tin đơn hàng để tiếp tục thanh toán
+    localStorage.setItem("continuePayment", JSON.stringify({
+      id: orderId,
+      total: orderData.total,
+      address: orderData.address
+    }));
+
+    window.location.href = "payment.html?order_id=" + orderId + "&price=" + orderData.total + "&method=paypal";
+  } catch (error) {
+    console.error("Continue payment error:", error);
+    alert("Lỗi: " + error.message);
+  }
+}
+
+
+
+document.addEventListener("DOMContentLoaded", loadOrders);
+
+// Auto-refresh orders every 30 seconds
+setInterval(() => {
+  console.log(" Auto-refreshing orders...", new Date().toLocaleTimeString());
+  loadOrders();
+}, 30000);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+      <footer>
+   <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo footer-logo" href="#"><span class="logo-badge">Tech</span><span class="logo-text">Mall</span></a>
+        <p class="muted">© 2025 TechMall. Tất cả các quyền được bảo lưu.</p>
+        <p class="muted">Hotline: 1800 0000 (Miễn phí)</p>
+      </div>
+      <div>
+        <h4>Hỗ trợ khách hàng</h4>
+        <ul class="footer-list">
+          <li><a href="#">Trung tâm trợ giúp</a></li>
+          <li><a href="#">Hướng dẫn mua hàng</a></li>
+          <li><a href="#">Chính sách bảo hành</a></li>
+          <li><a href="#">Chính sách đổi trả</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Về TechMall</h4>
+        <ul class="footer-list">
+          <li><a href="#">Giới thiệu</a></li>
+          <li><a href="#">Tuyển dụng</a></li>
+          <li><a href="#">Hệ thống cửa hàng</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kết nối với chúng tôi</h4>
+        <div class="socials">
+          <a href="#" aria-label="Facebook">🌐</a>
+          <a href="#" aria-label="YouTube">▶️</a>
+          <a href="#" aria-label="Zalo">💬</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</div>
+<!-- Edit Order Modal (moved here so it's direct child of body) -->
+<div id="editOrderModal" class="modal">
+  <div class="modal-content">
+    <h3>Sửa địa chỉ giao hàng</h3>
+    <form id="editOrderForm">
+      <input type="hidden" id="editOrderId">
+      <label for="edit_fullname">Họ và tên</label>
+      <input id="edit_fullname" type="text" required>
+      <label for="edit_phone">Số điện thoại</label>
+      <input id="edit_phone" type="tel" required>
+      <label for="edit_address">Địa chỉ</label>
+      <input id="edit_address" type="text" required>
+      <div class="modal-actions">
+        <button type="button" id="cancelEdit" class="cancel">Hủy</button>
+        <button type="submit" class="save">Lưu</button>
+      </div>
+    </form>
+  </div>
+</div>
+</body>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Danh sách sản phẩm</title>
+  <link rel="stylesheet" href="styles.css">
+  
+</head>
+<body>
+  <!-- Top Notification -->
+  <div class="topbar">
+    <div class="container">
+      <span>⚡ Giảm đến 50% | Freeship đơn từ 500k | Trả góp 0%</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">
+        <span class="logo-badge">Tech</span><span class="logo-text">Mall</span>
+      </a>
+
+      
+
+      <form class="search-box" action="#" method="get" role="search" aria-label="Tìm kiếm">
+        <input name="q" type="text" placeholder="Bạn muốn tìm gì? (Ví dụ: iPhone 15, Galaxy S24...)" aria-label="Ô tìm kiếm">
+        <button type="submit" aria-label="Tìm kiếm">🔍</button>
+      </form>
+
+    <nav class="quick-links">
+  <a href="#" class="quick-item" aria-label="Tra cứu đơn hàng">🧾 Đơn hàng</a>
+  <a href="cart.html" class="quick-item" aria-label="Giỏ hàng">🛒 Giỏ hàng</a>
+
+  <!-- Nút mặc định khi chưa đăng nhập -->
+  <a href="login.html" id="btnAccount" class="quick-item" aria-label="Tài khoản">👤 Tài khoản</a>
+
+  <!-- Panel hiện khi đã đăng nhập -->
+  <div id="userPanel" class="quick-item" style="display:none;">
+  👤 
+  <a id="userName" href="profile.html" style="text-decoration:none; color:inherit;"></a>
+  <button id="btnLogout">Đăng xuất</button>
+</div>
+</nav>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const btnAccount = document.getElementById("btnAccount");
+  const userPanel = document.getElementById("userPanel");
+  const userName = document.getElementById("userName");
+  const btnLogout = document.getElementById("btnLogout");
+
+  if (user && user.full_name) {
+    // Ẩn nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "none";
+
+    // Hiện panel user
+    if (userName) userName.textContent = user.full_name;
+    if (userPanel) userPanel.style.display = "inline-block";
+  } else {
+    // Nếu không có user -> hiển thị nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "inline-block";
+    if (userPanel) userPanel.style.display = "none";
+  }
+
+  // Đăng xuất
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+  }
+});
+</script>
+
+
+
+      <!-- Mobile drawer -->
+      <nav class="drawer">
+        <ul class="drawer-list">
+          <li><a href="#">Điện thoại</a></li>
+          <li><a href="#">Laptop</a></li>
+          <li><a href="#">Tablet</a></li>
+          <li><a href="#">Âm thanh</a></li>
+          <li><a href="#">Đồng hồ</a></li>
+          <li><a href="#">Phụ kiện</a></li>
+         
+         
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Category bar (desktop) -->
+    <div class="category-bar">
+      <div class="container cat-inner">
+        <a href="showproduct1.html">Điện thoại</a>
+        <a href="showproduct2.html">Laptop</a>
+        <a href="showproduct3.html">Đồng hồ</a>
+        <a href="showproduct4.html">Phụ kiện</a>
+
+      </div>
+    </div>
+  </header>
+
+
+<!-- Product Section: Điện thoại (dạng dọc) -->
+   <!-- Product Section: Điện thoại -->
+ <section class="section">
+    <div class="container section-head">
+      <h2>Đồng hồ</h2>
+    </div>
+
+    <div id="watch-grid" class="container product-grid">
+      <!-- Sản phẩm sẽ render từ JS -->
+    </div>
+
+    <!-- Phân trang -->
+    <div id="pagination" style="text-align:center; margin-top:20px;">
+      <button id="prevBtn" class="btn btn-outline">← Trang trước</button>
+      <span id="pageInfo" style="margin:0 10px; font-weight:bold;"></span>
+      <button id="nextBtn" class="btn btn-outline">Trang sau →</button>
+    </div>
+  </section>
+
+<script>
+  let currentPage = 1;
+  const limit = 6; // mỗi trang 6 sản phẩm
+
+  async function fetchProducts(page = 1, limit = 6) {
+    try {
+      const res = await fetch(
+        `http://localhost/ecommerce_api/index.php/api/products?category_id=3&limit=${limit}&page=${page}`
+      );
+      const data = await res.json();
+
+      const grid = document.getElementById("watch-grid");
+
+      if (!data.success || !data.data || data.data.length === 0) {
+        grid.innerHTML = `<p>${data.message || "Không có sản phẩm nào."}</p>`;
+        // Không còn dữ liệu → ẩn nút next
+        document.getElementById("nextBtn").style.display = "none";
+        return;
+      }
+
+      renderProducts(data.data, "watch-grid");
+      document.getElementById("pageInfo").textContent = `Trang ${page}`;
+
+      // Xử lý hiển thị nút phân trang
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+
+      // Nếu ở trang 1 → ẩn Prev
+      prevBtn.style.display = (page === 1) ? "none" : "inline-block";
+
+      // Nếu số sản phẩm trả về < limit → ẩn Next
+      nextBtn.style.display = (data.data.length < limit) ? "none" : "inline-block";
+
+    } catch (err) {
+      console.error("Fetch error:", err);
+      document.getElementById("watch-grid").innerHTML = `<p>Lỗi tải sản phẩm!</p>`;
+    }
+  }
+
+  function renderProducts(products, containerId) {
+    const grid = document.getElementById(containerId);
+    grid.innerHTML = "";
+
+    products.forEach(prod => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+
+      // Ảnh
+    const img = document.createElement("img");
+    let thumb = Array.isArray(prod.thumbnail) ? prod.thumbnail[0] : prod.thumbnail;
+    if (!thumb) thumb = 'default.png';
+    img.src = `public/images/products/${prod.id}/${thumb}`;
+      img.alt = prod.product_name;
+      img.style.width = "150px";
+      img.style.height = "auto";
+      card.appendChild(img);
+
+      // Tên
+      const h3 = document.createElement("h3");
+      h3.className = "product-name";
+      h3.textContent = prod.product_name;
+      card.appendChild(h3);
+
+      // Giá
+      const priceDiv = document.createElement("div");
+      priceDiv.className = "price";
+      const strong = document.createElement("strong");
+      strong.textContent = Number(prod.price || 0).toLocaleString("vi-VN") + "₫";
+      priceDiv.appendChild(strong);
+
+      if (prod.old_price && prod.old_price > prod.price) {
+        const s = document.createElement("s");
+        s.textContent = Number(prod.old_price).toLocaleString("vi-VN") + "₫";
+        priceDiv.appendChild(s);
+      }
+      card.appendChild(priceDiv);
+
+      // Nút
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      const buyBtn = document.createElement("button");
+      buyBtn.className = "btn btn-primary";
+      buyBtn.textContent = "Mua ngay";
+      const addBtn = document.createElement("button");
+      addBtn.className = "btn btn-outline";
+      addBtn.textContent = "Thêm giỏ";
+      actions.appendChild(buyBtn);
+      actions.appendChild(addBtn);
+      card.appendChild(actions);
+
+      grid.appendChild(card);
+    });
+  }
+
+  // Sự kiện phân trang
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchProducts(currentPage, limit);
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage--;
+        fetchProducts(currentPage, limit);
+      }
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      currentPage++;
+      fetchProducts(currentPage, limit);
+    });
+  });
+</script>
+
+
+
+   <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo footer-logo" href="#"><span class="logo-badge">Tech</span><span class="logo-text">Mall</span></a>
+        <p class="muted">© 2025 TechMall. Tất cả các quyền được bảo lưu.</p>
+        <p class="muted">Hotline: 1800 0000 (Miễn phí)</p>
+      </div>
+      <div>
+        <h4>Hỗ trợ khách hàng</h4>
+        <ul class="footer-list">
+          <li><a href="#">Trung tâm trợ giúp</a></li>
+          <li><a href="#">Hướng dẫn mua hàng</a></li>
+          <li><a href="#">Chính sách bảo hành</a></li>
+          <li><a href="#">Chính sách đổi trả</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Về TechMall</h4>
+        <ul class="footer-list">
+          <li><a href="#">Giới thiệu</a></li>
+          <li><a href="#">Tuyển dụng</a></li>
+          <li><a href="#">Hệ thống cửa hàng</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kết nối với chúng tôi</h4>
+        <div class="socials">
+          <a href="#" aria-label="Facebook">🌐</a>
+          <a href="#" aria-label="YouTube">▶️</a>
+          <a href="#" aria-label="Zalo">💬</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

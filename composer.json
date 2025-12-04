@@ -1,0 +1,19 @@
+{
+    "name": "ecommerce/api",
+    "description": "E-commerce API with RBAC",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "phpmailer/phpmailer": "^6.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "config": {
+        "platform-check": false
+    }
+}

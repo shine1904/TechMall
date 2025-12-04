@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản trị người dùng - TechMall</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin-page">
+  <!-- Admin Header -->
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <a class="admin-brand" href="index.html">
+        <span class="logo-badge">Tech</span><span class="logo-text">Mall Admin</span>
+      </a>
+      <nav class="admin-nav">
+        <a href="admin-products.html" data-nav="products">Sản phẩm</a>
+        <a href="admin-users.html" data-nav="users">Người dùng</a>
+        <a href="index.html">Trang bán hàng</a>
+      </nav>
+      <div class="admin-user">
+        <span id="adminUserName" class="muted"></span>
+        <button class="btn" id="btnLogout">Đăng xuất</button>
+      </div>
+    </div>
+  </header>
+  
+  <div class="admin-wrap">
+    <h1 class="page-title">Quản trị người dùng</h1>
+
+    <div class="bar-top">
+      <div class="left toolbar">
+        <input id="txtSearch" placeholder="Tìm theo tên/email (lọc tại chỗ)">
+        <button class="btn" id="btnClear">Xóa lọc</button>
+      </div>
+      <div class="right toolbar">
+        <small id="noticeAuth" class="muted" style="display:none">Yêu cầu quyền để xem/sửa/xóa</small>
+        <button class="btn primary" id="btnCreate">+ Tạo người dùng</button>
+      </div>
+    </div>
+
+    <table class="admin-table" id="tblUsers">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Họ tên</th>
+          <th>Email</th>
+          <th>SĐT</th>
+          <th>Vai trò</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="7" class="empty">Đang tải dữ liệu...</td></tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button class="btn" id="btnPrev">Trang trước</button>
+      <span class="page-info" id="pageLabel">Trang 1</span>
+      <button class="btn" id="btnNext">Trang sau</button>
+    </div>
+  </div>
+
+  <dialog id="dlgUser">
+    <form method="dialog" class="dlg" id="frmUser">
+      <h3 id="dlgTitle">Tạo người dùng</h3>
+      <input type="hidden" id="usrId">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="usrFullName">Họ tên *</label>
+          <input id="usrFullName" required placeholder="Nguyễn Văn A">
+        </div>
+        <div class="form-group">
+          <label for="usrEmail">Email *</label>
+          <input id="usrEmail" type="email" required placeholder="name@example.com">
+        </div>
+        <div class="form-group" id="grpPassword">
+          <label for="usrPassword">Mật khẩu *</label>
+          <input id="usrPassword" type="password" placeholder="••••••" required>
+        </div>
+        <div class="form-group">
+          <label for="usrPhone">Số điện thoại</label>
+          <input id="usrPhone" placeholder="090...">
+        </div>
+        <div class="form-group full">
+          <label for="usrAddress">Địa chỉ</label>
+          <input id="usrAddress" placeholder="Địa chỉ...">
+        </div>
+        <div class="form-group full">
+          <label for="usrCard">Thẻ/Thông tin phụ</label>
+          <input id="usrCard" placeholder="...">
+        </div>
+        <div class="form-group">
+          <label for="usrRoles">Vai trò *</label>
+          <select id="usrRoles" multiple style="min-height: 100px;">
+            <option value="2">Customer (Khách hàng)</option>
+            <option value="3">Super Admin (Quản trị toàn quyền)</option>
+            <option value="4">Product Admin (Quản trị sản phẩm)</option>
+            <option value="5">Order Admin (Quản trị đơn hàng)</option>
+          </select>
+          <small class="muted">Giữ Ctrl/Cmd để chọn nhiều vai trò</small>
+        </div>
+      </div>
+      <div class="dlg-actions">
+        <button class="btn" type="button" id="btnCancel">Hủy</button>
+        <button class="btn primary" id="btnSave" type="submit">Lưu</button>
+      </div>
+    </form>
+  </dialog>
+
+
+
+  <!-- Admin Authentication Guard - PHẢI load trước admin-users.js -->
+  <script src="js/admin-auth.js"></script>
+  <script src="js/admin-users.js"></script>
+  
+  <!-- Admin Footer -->
+  <footer class="admin-footer">
+    <div class="footer-inner">
+      <div>© 2025 TechMall Admin Console</div>
+      <div class="muted">Nội bộ · Liên hệ: admin@techmall</div>
+    </div>
+  </footer>
+</body>
+</html>

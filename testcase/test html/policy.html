@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chính sách - TechMall</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="container">
+      <span>⚡ Giảm đến 50% | Freeship đơn từ 500k | Trả góp 0%</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+   <header class="header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html" aria-label="Trang chủ">
+        <span class="logo-badge">Tech</span><span class="logo-text">Mall</span>
+      </a>
+
+
+      <form class="search-box" action="#" method="get" role="search" aria-label="Tìm kiếm">
+        <input name="q" type="text" placeholder="Bạn muốn tìm gì? (Ví dụ: iPhone 15, Galaxy S24...)" aria-label="Ô tìm kiếm">
+        <button type="submit" aria-label="Tìm kiếm">🔍</button>
+      </form>
+
+      <nav class="quick-links">
+        <a href="order.html" class="quick-item" aria-label="Tra cứu đơn hàng">🧾 Đơn hàng</a>
+        <a href="cart.html" class="quick-item" aria-label="Giỏ hàng">🛒 Giỏ hàng</a>
+          <a href="login.html" id="btnAccount" class="quick-item" aria-label="Tài khoản">👤 Tài khoản</a>
+
+  <!-- Panel hiện khi đã đăng nhập -->
+  <div id="userPanel" class="quick-item" style="display:none;">
+  👤 
+  <a id="userName" href="profile.html" style="text-decoration:none; color:inherit;"></a>
+  <button id="btnLogout">Đăng xuất</button>
+</div>
+</nav>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const btnAccount = document.getElementById("btnAccount");
+  const userPanel = document.getElementById("userPanel");
+  const userName = document.getElementById("userName");
+  const btnLogout = document.getElementById("btnLogout");
+
+  if (user && user.full_name) {
+    // Ẩn nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "none";
+
+    // Hiện panel user
+    if (userName) userName.textContent = user.full_name;
+    if (userPanel) userPanel.style.display = "inline-block";
+  } else {
+    // Nếu không có user -> hiển thị nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "inline-block";
+    if (userPanel) userPanel.style.display = "none";
+  }
+
+  // Đăng xuất
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+  }
+});
+</script>
+  </header>
+
+  <!-- Nội dung chính sách -->
+  <main class="container section">
+    <h1>Chính sách & Điều khoản</h1>
+    <p class="muted">Chúng tôi cam kết mang đến trải nghiệm mua sắm minh bạch và an toàn.</p>
+
+    <section class="policy-section">
+      <h2>1. Chính sách giao hàng</h2>
+      <p>- Giao hàng miễn phí cho đơn từ 1.000.000đ.</p>
+      <p>- Giao hàng nội thành các thành phố Hồ Chí Minh (Quận 1, Quận 3, Quận 4, Quận 5, Quận 6, Quận 7, Quận 8, Quận 10, Quận 11, Quận 12, Quận Bình Thạnh, Quận Gò Vấp, Quận Tân Bình, Quận Tân Phú, và Quận Bình Tân cũ).</p>
+    </section>
+
+    <section class="policy-section">
+      <h2>2. Chính sách đổi trả & hoàn tiền</h2>
+      <p>- Đổi trả trong vòng 30 ngày với sản phẩm lỗi do nhà sản xuất.</p>
+      <p>- Hoàn tiền 100% với sản phẩm còn nguyên seal.</p>
+      <p>- Phí đổi trả do khách hàng chịu nếu lý do cá nhân.</p>
+    </section>
+
+    <section class="policy-section">
+      <h2>3. Chính sách bảo hành</h2>
+      <p>- Bảo hành chính hãng theo từng sản phẩm.</p>
+      <p>- Hỗ trợ 1 đổi 1 trong 30 ngày nếu sản phẩm lỗi phần cứng.</p>
+    </section>
+
+    <section class="policy-section">
+      <h2>4. Điều khoản & điều kiện sử dụng dịch vụ</h2>
+      <p>- Khách hàng cần đăng ký tài khoản mua hàng.</p>
+      <p>- Không sử dụng website cho mục đích gian lận hoặc trái pháp luật.</p>
+      <p>- TechMall có quyền từ chối phục vụ nếu phát hiện vi phạm.</p>
+    </section>
+    <section class="policy-section">
+      <h2>5. Điều khoản mua hàng</h2>
+      <p>- Khách hàng cần cung cấp thông tin chính xác và đầy đủ khi đặt hàng.</p>
+      <p>- Khách hàng có thể hủy,sửa thông tin giao hàng trong vòng 1 giờ kể từ lúc tạo đơn hàng với các đơn hàng sử dụng hình thức giao hàng COD.</p>
+      <p>- Đối với đơn hàng sử dụng hình thức thanh toán PayPal chỉ có thể YÊU CẦU HỦY đơn hàng và cập nhật địa chỉ giao hàng trong vòng 1 giờ kể từ lúc tạo đơn hàng</p>
+      <p>- Vui lòng thanh toán trong vòng 1 giờ từ thời điểm tạo đơn hàng,nếu không sẽ bị hủy(Đối với hình thức thanh toán qua PayPal).</p>
+      <p>- Sau 1 giờ, mọi yêu cầu thay đổi hoặc hủy đơn hàng sẽ không được chấp nhận.</p>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo footer-logo" href="#"><span class="logo-badge">Tech</span><span class="logo-text">Mall</span></a>
+        <p class="muted">© 2025 TechMall. Tất cả các quyền được bảo lưu.</p>
+      </div>
+      <div>
+        <h4>Hỗ trợ khách hàng</h4>
+        <ul class="footer-list">
+          <li><a href="policy.html">Chính sách của TechMall</a></li>
+          <li><a href="#">Hướng dẫn mua hàng</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản trị sản phẩm - TechMall</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin-page">
+  <!-- Admin Header -->
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <a class="admin-brand" href="index.html">
+        <span class="logo-badge">Tech</span><span class="logo-text">Mall Admin</span>
+      </a>
+      <nav class="admin-nav">
+        <a href="admin-products.html" data-nav="products">Sản phẩm</a>
+        <a href="admin-users.html" data-nav="users">Người dùng</a>
+        <a href="index.html">Trang bán hàng</a>
+      </nav>
+      <div class="admin-user">
+        <span id="adminUserName" class="muted"></span>
+        <button class="btn" id="btnLogout">Đăng xuất</button>
+      </div>
+    </div>
+  </header>
+  <script>
+    (function adminHeaderInit(){
+      const u = (()=>{ try{return JSON.parse(localStorage.getItem('user')||'null')}catch{return null} })();
+      const nameEl = document.getElementById('adminUserName');
+      if(nameEl) nameEl.textContent = (u && u.full_name) ? u.full_name : 'Khách';
+      const btnLogout = document.getElementById('btnLogout');
+      if(btnLogout){ btnLogout.addEventListener('click', ()=>{ localStorage.clear(); window.location.href = 'login.html'; }); }
+      
+      // Kiểm tra quyền để thao tác với nut điều hướng
+      let roles = (u && u.roles) || [];
+      if (typeof roles === "string") {
+        roles = [roles];
+      }
+      
+      const isProductAdminOnly = roles.includes('product_admin') && 
+                                !roles.includes('super_admin') && 
+                                !roles.includes('user.read') &&
+                                !roles.includes('user.role.manage');
+      
+      const userNavBtn = document.querySelector('.admin-nav a[data-nav="users"]');
+      if (userNavBtn && isProductAdminOnly) {
+        userNavBtn.style.display = 'none';
+      }
+      
+      const path = (location.pathname||'').toLowerCase();
+      document.querySelectorAll('.admin-nav a[data-nav]').forEach(a=>{
+        const key=a.getAttribute('data-nav');
+        if((key==='products' && path.endsWith('admin-products.html')) || 
+           (key==='users' && path.endsWith('admin-users.html')) ||
+           (key==='orders' && path.endsWith('admin-orders.html'))){ 
+          a.classList.add('active'); 
+        }
+      });
+    })();
+  </script>
+  <div class="admin-wrap">
+    <h1 class="page-title">Quản trị sản phẩm</h1>
+    
+    <!-- Search and Actions Bar -->
+    <div class="bar-top">
+      <div class="left toolbar">
+        <input id="txtSearch" placeholder="Tìm theo tên/mô tả..." style="min-width: 250px;">
+        <select id="selCategory">
+          <option value="">Tất cả danh mục</option>
+        </select>
+        <button class="btn primary" id="btnSearch">Tìm</button>
+        <button class="btn" id="btnClear">Xóa tìm</button>
+      </div>
+      <div class="right toolbar">
+        <small id="noticeAuth" class="muted" style="display:none">Yêu cầu đăng nhập để thêm/sửa/xóa</small>
+        <button class="btn primary" id="btnCreate">+ Thêm sản phẩm</button>
+      </div>
+    </div>
+
+    <!-- Products Table -->
+    <table class="admin-table" id="tblProducts">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Ảnh</th>
+          <th>Tên sản phẩm</th>
+          <th>Thương hiệu</th>
+          <th>Giá</th>
+          <th>Tồn kho</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="8" class="empty">Đang tải dữ liệu...</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button class="btn" id="btnPrev">Trang trước</button>
+      <span class="page-info" id="pageLabel">Trang 1</span>
+      <button class="btn" id="btnNext">Trang sau</button>
+    </div>
+  </div>
+
+  <!-- Product Create/Edit Dialog -->
+  <dialog id="dlgProduct" class="products-dialog">
+    <form method="dialog" class="dlg" id="frmProduct">
+      <h3 id="dlgTitle">Thêm sản phẩm mới</h3>
+      <input type="hidden" id="prdId">
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="prdName">Tên sản phẩm *</label>
+          <input id="prdName" required placeholder="Nhập tên sản phẩm">
+        </div>
+        <div class="form-group">
+          <label for="prdCategory">Danh mục *</label>
+          <select id="prdCategory" required>
+            <option value="">Chọn danh mục</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="prdType">Thương hiệu</label>
+          <input id="prdType" placeholder="VD: Samsung, Apple, Xiaomi...">
+        </div>
+        <div class="form-group">
+          <label for="prdPrice">Giá bán (₫) *</label>
+          <input id="prdPrice" type="number" min="0" step="1000" required placeholder="0">
+        </div>
+        <div class="form-group">
+          <label for="prdStock">Số lượng tồn kho *</label>
+          <input id="prdStock" type="number" min="0" step="1" required placeholder="0">
+        </div>
+        <div class="form-group">
+          <label for="prdThumb">Ảnh sản phẩm (URL hoặc JSON)</label>
+          <input id="prdThumb" placeholder='VD: "image1.jpg" hoặc ["img1.jpg","img2.jpg"]'>
+        </div>
+        <div class="form-group full">
+          <label for="prdDesc">Mô tả chi tiết</label>
+          <textarea id="prdDesc" rows="4" placeholder="RAM: 8GB, ROM: 256GB, Camera: 108MP, Pin: 5000mAh..."></textarea>
+        </div>
+      </div>
+      
+      <div class="dlg-actions">
+        <button class="btn" type="button" id="btnCancel">Hủy</button>
+        <button class="btn primary" id="btnSave" type="submit">Lưu sản phẩm</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="js/admin-products.js"></script>
+  <!-- Admin Footer -->
+   <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo footer-logo" href="#"><span class="logo-badge">Tech</span><span class="logo-text">Mall</span></a>
+        <p class="muted">© 2025 TechMall. Tất cả các quyền được bảo lưu.</p>
+        <p class="muted">Hotline: 6969 9696 (Miễn phí)</p>
+      </div>
+      <div>
+        <h4>Hỗ trợ khách hàng</h4>
+        <ul class="footer-list">
+          <li><a href="#">Trung tâm trợ giúp</a></li>
+          <li><a href="#">Hướng dẫn mua hàng</a></li>
+          <li><a href="#">Chính sách bảo hành</a></li>
+          <li><a href="#">Chính sách đổi trả</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Về TechMall</h4>
+        <ul class="footer-list">
+          <li><a href="#">Giới thiệu</a></li>
+          <li><a href="#">Tuyển dụng</a></li>
+          <li><a href="#">Hệ thống cửa hàng</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kết nối với chúng tôi</h4>
+        <div class="socials">
+          <a href="#" aria-label="Facebook">🌐</a>
+          <a href="#" aria-label="YouTube">▶️</a>
+          <a href="#" aria-label="Zalo">💬</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Admin Authentication Guard - PHẢI load trước admin-products.js -->
+  <script src="js/admin-auth.js"></script>
+  <!-- Admin Products Script -->
+  <script src="js/admin-products.js"></script>
+</body>
+</html>

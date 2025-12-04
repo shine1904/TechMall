@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - TechMall</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+
+<body>
+    <!-- Header -->
+     <header class="header">
+    <div class="container header-inner" aria-label="Trang chủ">
+      <a class="logo" href="index.html">
+        <span class="logo-badge">Tech</span><span class="logo-text">Mall</span>
+      </a>
+
+      
+
+      <form class="search-box" action="#" method="get" role="search" aria-label="Tìm kiếm">
+        <input name="q" type="text" placeholder="Bạn muốn tìm gì? (Ví dụ: iPhone 15, Galaxy S24...)" aria-label="Ô tìm kiếm">
+        <button type="submit" aria-label="Tìm kiếm">🔍</button>
+      </form>
+
+      <nav class="quick-links">
+        <a href="#" class="quick-item" aria-label="Tra cứu đơn hàng">🧾 Đơn hàng</a>
+        <a href="cart.html" class="quick-item" aria-label="Giỏ hàng">🛒 Giỏ hàng</a>
+          <a href="login.html" id="btnAccount" class="quick-item" aria-label="Tài khoản">👤 Tài khoản</a>
+
+  <!-- Panel hiện khi đã đăng nhập -->
+  <div id="userPanel" class="quick-item" style="display:none;">
+  👤 
+  <a id="userName" href="profile.html" style="text-decoration:none; color:inherit;"></a>
+  <button id="btnLogout">Đăng xuất</button>
+</div>
+</nav>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const btnAccount = document.getElementById("btnAccount");
+  const userPanel = document.getElementById("userPanel");
+  const userName = document.getElementById("userName");
+  const btnLogout = document.getElementById("btnLogout");
+
+  if (user && user.full_name) {
+    // Ẩn nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "none";
+
+    // Hiện panel user
+    if (userName) userName.textContent = user.full_name;
+    if (userPanel) userPanel.style.display = "inline-block";
+  } else {
+    // Nếu không có user -> hiển thị nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "inline-block";
+    if (userPanel) userPanel.style.display = "none";
+  }
+
+  // Đăng xuất
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+  }
+});
+</script>
+
+     
+      
+    </div>
+
+    <!-- Category bar (desktop) -->
+    <div class="category-bar">
+      <div class="container cat-inner">
+        <a href="showproduct1.html">Điện thoại</a>
+        <a href="showproduct2.html">Laptop</a>
+        <a href="showproduct3.html">Đồng hồ</a>
+        <a href="showproduct4.html">Phụ kiện</a>
+
+      </div>
+    </div>
+  </header>
+
+ <main class="login-page">
+  <div class="login-container">
+    <h1>Đăng nhập</h1>
+    
+    <!-- Thông báo lỗi từ admin redirect -->
+    <div id="authErrorAlert" style="display:none; background:#fee; color:#c33; padding:10px; margin:10px 0; border:1px solid #fcc; border-radius:4px;">
+    </div>
+    
+    <!-- thêm id cho form -->
+    <form id="loginForm">
+      <!-- đổi username thành email để khớp với JS và API -->
+      <input type="email" id="email" name="email" placeholder="Email" required>
+      <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
+
+      <a href="#" class="forgot" id="forgotBtn">Quên mật khẩu?</a>
+
+      <button type="submit" class="btn-primary">Đăng nhập</button>
+      <a href="register.html" class="btn-secondary">Đăng ký</a>
+    </form>
+  </div>
+</main>
+<script>
+let inactivityTimer;
+
+// 🕒 Bắt đầu đếm thời gian không hoạt động
+function startInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => {
+    alert("Bạn đã dừng quá lâu (hơn 1 phút). Vui lòng nhập lại để đăng nhập.");
+  }, 60000); // 1 phút
+}
+
+// Reset timer mỗi khi người dùng gõ
+document.getElementById("email").addEventListener("input", startInactivityTimer);
+document.getElementById("password").addEventListener("input", startInactivityTimer);
+
+// 🔐 Hiển thị thông báo lỗi admin redirect nếu có
+document.addEventListener('DOMContentLoaded', () => {
+  const authError = sessionStorage.getItem('authError');
+  if (authError) {
+    const alertEl = document.getElementById('authErrorAlert');
+    if (alertEl) {
+      alertEl.textContent = authError;
+      alertEl.style.display = 'block';
+    }
+    // Xóa thông báo sau khi hiển thị
+    sessionStorage.removeItem('authError');
+  }
+});
+
+// Bắt đầu đếm khi trang load
+startInactivityTimer();
+
+// 🟢 Xử lý Đăng nhập
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const url = "http://localhost/ecommerce_api/index.php/api/login";
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const raw = await res.text();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      console.error("Server không trả về JSON:", raw);
+      alert("Lỗi server: dữ liệu không hợp lệ.");
+      return;
+    }
+
+    if (res.ok && data.success && data.data?.token) {
+      // Lưu token
+      localStorage.setItem("token", data.data.token);
+
+      // Lưu user
+      if (data.data.user) {
+        localStorage.setItem("user", JSON.stringify(data.data.user));
+        localStorage.setItem("user_id", data.data.user.id);
+      }
+
+      alert(data.message || "Đăng nhập thành công!");
+      window.location.href = "index.html";
+    } else {
+      // Nếu backend báo bị khóa
+      if (res.status === 403 && data.message?.toLowerCase().includes("locked")) {
+        alert(data.message);
+      } else {
+        alert(data.message || `Lỗi server (${res.status})`);
+      }
+    }
+  } catch (err) {
+    console.error("Fetch exception:", err);
+    alert("Không thể kết nối tới server!");
+  } finally {
+    // Sau mỗi lần submit, khởi động lại timer
+    startInactivityTimer();
+  }
+});
+
+// 🔵 Xử lý Quên mật khẩu
+document.getElementById("forgotBtn").addEventListener("click", async function (e) {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value.trim();
+  if (!email) {
+    alert("Vui lòng nhập email trước khi yêu cầu quên mật khẩu!");
+    return;
+  }
+
+  const url = "http://localhost/ecommerce_api/index.php/api/forgot-password";
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({ email })
+    });
+
+    const raw = await res.text();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      console.error("Server không trả về JSON:", raw);
+      alert("Lỗi server: dữ liệu không hợp lệ.");
+      return;
+    }
+
+    if (res.ok && data.success) {
+      alert(data.message || "Một email đặt lại mật khẩu đã được gửi!");
+    } else {
+      alert(data.message || `Lỗi server (${res.status})`);
+    }
+  } catch (err) {
+    console.error("Fetch exception:", err);
+    alert("Không thể kết nối tới server!");
+  }
+});
+</script>
+
+
+
+
+
+
+
+
+
+    <!-- Footer -->
+    
+       <footer>
+   <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo footer-logo" href="#"><span class="logo-badge">Tech</span><span class="logo-text">Mall</span></a>
+        <p class="muted">© 2025 TechMall. Tất cả các quyền được bảo lưu.</p>
+        <p class="muted">Hotline: 1800 0000 (Miễn phí)</p>
+      </div>
+      <div>
+        <h4>Hỗ trợ khách hàng</h4>
+        <ul class="footer-list">
+          <li><a href="#">Trung tâm trợ giúp</a></li>
+          <li><a href="#">Hướng dẫn mua hàng</a></li>
+          <li><a href="#">Chính sách bảo hành</a></li>
+          <li><a href="#">Chính sách đổi trả</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Về TechMall</h4>
+        <ul class="footer-list">
+          <li><a href="#">Giới thiệu</a></li>
+          <li><a href="#">Tuyển dụng</a></li>
+          <li><a href="#">Hệ thống cửa hàng</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kết nối với chúng tôi</h4>
+        <div class="socials">
+          <a href="#" aria-label="Facebook">🌐</a>
+          <a href="#" aria-label="YouTube">▶️</a>
+          <a href="#" aria-label="Zalo">💬</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+    
+</body>
+</html>

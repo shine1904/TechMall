@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <title>Đăng ký</title>
+</head>
+<body>
+    <!-- Header -->
+     <header class="header">
+    <div class="container header-inner" aria-label="Trang chủ">
+      <a class="logo" href="index.html">
+        <span class="logo-badge">Tech</span><span class="logo-text">Mall</span>
+      </a>
+
+      
+
+      <form class="search-box" action="#" method="get" role="search" aria-label="Tìm kiếm">
+        <input name="q" type="text" placeholder="Bạn muốn tìm gì? (Ví dụ: iPhone 15, Galaxy S24...)" aria-label="Ô tìm kiếm">
+        <button type="submit" aria-label="Tìm kiếm">🔍</button>
+      </form>
+
+      <nav class="quick-links">
+        <a href="#" class="quick-item" aria-label="Tra cứu đơn hàng">🧾 Đơn hàng</a>
+        <a href="cart.html" class="quick-item" aria-label="Giỏ hàng">🛒 Giỏ hàng</a>
+         <a href="login.html" id="btnAccount" class="quick-item" aria-label="Tài khoản">👤 Tài khoản</a>
+
+  <!-- Panel hiện khi đã đăng nhập -->
+  <div id="userPanel" class="quick-item" style="display:none;">
+  👤 
+  <a id="userName" href="profile.html" style="text-decoration:none; color:inherit;"></a>
+  <button id="btnLogout">Đăng xuất</button>
+</div>
+</nav>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const btnAccount = document.getElementById("btnAccount");
+  const userPanel = document.getElementById("userPanel");
+  const userName = document.getElementById("userName");
+  const btnLogout = document.getElementById("btnLogout");
+
+  if (user && user.full_name) {
+    // Ẩn nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "none";
+
+    // Hiện panel user
+    if (userName) userName.textContent = user.full_name;
+    if (userPanel) userPanel.style.display = "inline-block";
+  } else {
+    // Nếu không có user -> hiển thị nút đăng nhập
+    if (btnAccount) btnAccount.style.display = "inline-block";
+    if (userPanel) userPanel.style.display = "none";
+  }
+
+  // Đăng xuất
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+  }
+});
+</script>
+
+     
+      
+    </div>
+
+    <!-- Category bar (desktop) -->
+     <div class="category-bar">
+      <div class="container cat-inner">
+        <a href="showproduct1.html">Điện thoại</a>
+        <a href="showproduct2.html">Laptop</a>
+        <a href="showproduct3.html">Đồng hồ</a>
+        <a href="showproduct4.html">Phụ kiện</a>
+
+      </div>
+    </div>
+  </header>
+
+<main class="register-page">
+    <div class="register-container">
+        <h1>Đăng ký</h1>
+        <form id="register-form" action="register.php" method="post">
+
+           
+            <input type="email" id="email" name="email" placeholder="Email" required>
+            <input type="text" id="phone" name="phone" placeholder="Số điện thoại" required>
+            <input type="text" id="full_name" name="full_name" placeholder="Họ và tên" required>
+            <input type="text" id="address" name="address" placeholder="Địa chỉ" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm Password" required>
+
+            <button type="submit" class="btn-primary">Đăng ký</button>
+            <button type="button" class="btn-secondary">
+                <a href="login.html">Đăng nhập</a>
+            </button>
+        </form>
+    </div>
+</main>
+<script>
+document.getElementById("register-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const full_name = document.getElementById("full_name").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+    const address = document.getElementById("address").value;
+    const password = document.getElementById("password").value;
+    const confirm_password = document.getElementById("confirm-password").value;
+
+    // Kiểm tra password khớp nhau
+    if (password !== confirm_password) {
+        alert("Mật khẩu nhập lại không khớp!");
+        return;
+    }
+
+   try {
+    const res = await fetch("http://localhost/ecommerce_api/index.php/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ full_name, email, password, phone, address })
+    });
+
+    const data = await res.json();
+    console.log("Response từ API:", data);
+
+    if (res.ok && data.success) {
+        alert("Đăng ký thành công!");
+        window.location.href = "login.html";
+    } else {
+        // Hiển thị lỗi chi tiết từ backend
+        if (data.errors) {
+            let errorMsgs = Object.values(data.errors).join("\n");
+            alert("Lỗi:\n" + errorMsgs);
+        } else {
+            alert(data.message || "Đăng ký thất bại!");
+        }
+    }
+} catch (err) {
+    console.error("Lỗi fetch:", err);
+    alert("Không thể kết nối tới server!");
+}
+
+});
+</script>
+
+     
+   <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo footer-logo" href="#"><span class="logo-badge">Tech</span><span class="logo-text">Mall</span></a>
+        <p class="muted">© 2025 TechMall. Tất cả các quyền được bảo lưu.</p>
+        <p class="muted">Hotline: 1800 0000 (Miễn phí)</p>
+      </div>
+      <div>
+        <h4>Hỗ trợ khách hàng</h4>
+        <ul class="footer-list">
+          <li><a href="#">Trung tâm trợ giúp</a></li>
+          <li><a href="#">Hướng dẫn mua hàng</a></li>
+          <li><a href="#">Chính sách bảo hành</a></li>
+          <li><a href="#">Chính sách đổi trả</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Về TechMall</h4>
+        <ul class="footer-list">
+          <li><a href="#">Giới thiệu</a></li>
+          <li><a href="#">Tuyển dụng</a></li>
+          <li><a href="#">Hệ thống cửa hàng</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kết nối với chúng tôi</h4>
+        <div class="socials">
+          <a href="#" aria-label="Facebook">🌐</a>
+          <a href="#" aria-label="YouTube">▶️</a>
+          <a href="#" aria-label="Zalo">💬</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+
+
+</html>
